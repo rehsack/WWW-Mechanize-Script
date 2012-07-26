@@ -24,6 +24,7 @@ my $builder = Module::Build->new(
 	'File::ConfigDir' => '0.004',
 	'Hash::Merge' => 0.12,
 	'Module::Pluggable' => '4.0',
+	'Params::Util' => '0.33',
 	'Template' => '2.20',
 	'WWW::Mechanize' => '1.72',
 	'WWW::Mechanize::Timed' => '0.44',
