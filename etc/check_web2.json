@@ -1,0 +1,23 @@
+{
+    "defaults" : {
+	"check" : {
+	    "code_cmp" : ">",
+	    "response_code" : 2,
+	    "min_bytes_code" : 2,
+	    "max_bytes_code" : 1,
+	    "text_require_code" : 2,
+	    "min_elapsed_time_code" : 1,
+	    "max_elapsed_time_code" : 2
+	},
+	"request" : {}
+    },
+    "summary" : {
+	"template" : "[% CODE_NAME; IF MESSAGES.size > 0 %] - [% MESSAGES.join(', '); END %]\n",
+	"target" : "-"
+    },
+    "report" : {
+	"template" : "[% USE Dumper; Dumper.dump(RESPONSE) %]",
+	"target" : "/tmp/@OPTS_FILE@.log",
+	"append" : true
+    }
+}
