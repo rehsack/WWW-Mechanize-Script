@@ -7,7 +7,7 @@ use parent qw(WWW::Mechanize::Script::Plugin);
 
 use Params::Util qw(_ARRAY);
 
-our $VERSION = 0.001_001;
+our $VERSION = '0.001_002';
 
 use 5.014;
 

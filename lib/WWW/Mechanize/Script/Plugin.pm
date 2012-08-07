@@ -3,7 +3,7 @@ package WWW::Mechanize::Script::Plugin;
 use strict;
 use warnings;
 
-our $VERSION = 0.001_001;
+our $VERSION = '0.001_002';
 
 use 5.014;
 

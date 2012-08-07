@@ -31,7 +31,7 @@ use File::Slurp qw(read_file);
 use constant ST_FILE       => 0;
 use constant ST_TEST_BLOCK => 1;
 
-$VERSION = 0.001_001;
+$VERSION = '0.001_002';
 
 # horizontal space regexp
 my $reHS = qr/[\t ]/;

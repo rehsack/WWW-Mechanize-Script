@@ -15,7 +15,7 @@ use Pod::Usage;
 use WWW::Mechanize::Script::Util qw(:ALL);
 use WWW::Mechanize::Script;
 
-my $VERSION = 0.001;
+our $VERSION = '0.001_002';
 my %opts;
 my @options = ( "input-files=s@", "output-files=s@", "output-pattern=s{2}", "help|h", "usage|?" );
 

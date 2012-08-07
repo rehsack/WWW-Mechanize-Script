@@ -5,7 +5,7 @@ use warnings;
 
 use parent qw(WWW::Mechanize::Script::Plugin);
 
-our $VERSION = 0.001_001;
+our $VERSION = '0.001_002';
 
 use 5.014;
 
