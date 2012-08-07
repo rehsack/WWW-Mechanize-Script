@@ -52,7 +52,7 @@ Return an array of valid extensions (default: C<wts>, C<wtscript>).
 
 sub extensions
 {
-    my ( $class, @new_ext );
+    my ( $class, @new_ext ) = @_;
     @new_ext and @extensions = @new_ext;
     return @extensions;
 }
