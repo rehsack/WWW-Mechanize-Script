@@ -35,9 +35,9 @@ sub get_check_value_as_bool
 
     defined($val) or return;
     ref($val) and return $val;
-    if(_STRING($val))
+    if ( _STRING($val) )
     {
-	$val =~ m/(?:true|on|yes)/i and return 1;
+        $val =~ m/(?:true|on|yes)/i and return 1;
     }
 
     return 0;
