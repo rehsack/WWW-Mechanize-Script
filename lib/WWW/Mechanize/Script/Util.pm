@@ -95,7 +95,7 @@ sub load_config
     # find config file
     my @cfg_dirs    = uniq map { realpath($_) } config_dirs();
     my $progname    = fileparse( $0, qr/\.[^.]*$/ );
-    my @cfg_pattern = map { $progname . "." . $_ } Config::Any->extensions();
+    my @cfg_pattern = map { ($progname . "." . $_, "check_web." . $_) } Config::Any->extensions();
     my @cfg_files   = File::Find::Rule->file()->name(@cfg_pattern)->maxdepth(1)->in(@cfg_dirs);
     if (@cfg_files)
     {
@@ -152,7 +152,7 @@ sub find_scripts
         else
         {
             my ( $volume, $directories, $fn ) = File::Spec->splitpath($pattern);
-            my @script_pattern = map  { $fn . "." . $_ } Config::Any->extensions();
+            my @script_pattern = $fn =~ m/\.[^.]*$/ ? ($fn) : map  { $fn . "." . $_ } Config::Any->extensions();
             my @script_dirs    = grep { -d $_ }
               map { File::Spec->catdir( $_, $directories ) } @cfg_dirs;
             push( @script_filenames,
