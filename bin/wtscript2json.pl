@@ -76,7 +76,7 @@ foreach my $filename ( @{ $opts{"input-files"} } )
       and next;    # file not found or not parsable ...
                    # merge into default and previous loaded config ...
     my $json = $coder->pretty->encode( $scripts->{ $script_files[0] } );
-    write_file( $in2out{ $filename }, $json );
+    write_file( $in2out{$filename}, $json );
 }
 
 __END__
