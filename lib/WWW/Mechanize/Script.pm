@@ -5,7 +5,7 @@ use warnings;
 
 use File::Basename qw(fileparse);
 use File::Path qw(make_path);
-use Hash::Merge               ();
+use Hash::Merge ();
 use IO::File;
 use Module::Pluggable::Object ();
 use Template                  ();
@@ -31,7 +31,7 @@ WWW::Mechanize::Script - fetch websites and executes tests on the results
 
 =cut
 
-our $VERSION = 0.001_001;
+our $VERSION = '0.001_002';
 
 sub new
 {
@@ -126,13 +126,13 @@ sub _get_target
     my $target = $def->{target};
     $target //= "-";
 
-    if( $target ne "-" and $def->{append} )
+    if ( $target ne "-" and $def->{append} )
     {
-	my ($name,$path,$suffix) = fileparse($target);
-	-d $path or make_path($path);
-	my $fh = IO::File->new($target, ">>");
-	$fh->seek(0,SEEK_END);
-	$target = $fh;
+        my ( $name, $path, $suffix ) = fileparse($target);
+        -d $path or make_path($path);
+        my $fh = IO::File->new( $target, ">>" );
+        $fh->seek( 0, SEEK_END );
+        $target = $fh;
     }
 
     return $target;
@@ -150,8 +150,8 @@ sub summarize
                  MESSAGES  => [@msgs]
                );
 
-    my $input = $self->{cfg}->{summary}->{source} // \$self->{cfg}->{summary}->{template};
-    my $output = _get_target($self->{cfg}->{summary});
+    my $input    = $self->{cfg}->{summary}->{source} // \$self->{cfg}->{summary}->{template};
+    my $output   = _get_target( $self->{cfg}->{summary} );
     my $template = Template->new();
     $template->process( $input, \%vars, $output )
       or die $template->error();
@@ -179,8 +179,8 @@ sub gen_report
                              }
                );
 
-    my $input = $self->{cfg}->{report}->{source} // \$self->{cfg}->{report}->{template};
-    my $output = _get_target($self->{cfg}->{report});
+    my $input    = $self->{cfg}->{report}->{source} // \$self->{cfg}->{report}->{template};
+    my $output   = _get_target( $self->{cfg}->{report} );
     my $template = Template->new();
     $template->process( $input, \%vars, $output )
       or die $template->error();
