@@ -25,8 +25,8 @@ sub check_response
     my $ignore_case = $self->get_check_value_as_bool( $check, "ignore_case" );
     my $content = $mech->is_html() ? $mech->text() : $mech->content();
 
-    _ARRAY0($text_require) or $text_require = [$text_require];
-    _ARRAY0($text_forbid)  or $text_forbid  = [$text_forbid];
+    defined($text_require) and ref($text_require) ne "ARRAY" and $text_require = [$text_require];
+    defined($text_forbid) and ref($text_forbid) ne "ARRAY" and $text_forbid = [$text_forbid];
 
     my @match_fails;
     my $code = 0;
