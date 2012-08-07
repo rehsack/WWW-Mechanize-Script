@@ -38,19 +38,19 @@ do
 
 my $wms = WWW::Mechanize::Script->new( \%cfg );
 
-@cfg_files = find_scripts( \%cfg, $opts{file} );
+my @script_files = find_scripts( \%cfg, $opts{file} );
 
 my ( $code, @msgs ) = (0);
 eval {
     my @script;
     my $scripts = Config::Any->load_files(
                                            {
-                                             files           => [@cfg_files],
+                                             files           => [@script_files],
                                              use_ext         => 1,
                                              flatten_to_hash => 1,
                                            }
                                          );
-    foreach my $filename (@cfg_files)
+    foreach my $filename (@script_files)
     {
         defined( $scripts->{$filename} )
           or next;    # file not found or not parsable ...
