@@ -16,11 +16,26 @@ use WWW::Mechanize::Script::Util qw(:ALL);
 use WWW::Mechanize::Script;
 
 our $VERSION = '0.001_002';
-my %opts;
-my @options = ( "input-files=s@", "output-files=s@", "output-pattern=s{2}", "help|h", "usage|?" );
+my %opts = (
+             "input-files"    => [],
+             "output-files"   => [],
+             "output-pattern" => []
+           );
+my @options = (
+                "input-files=s@"      => $opts{"input-files"},
+                "output-files=s@"     => $opts{"output-files"},
+                "output-pattern=s{2}" => $opts{"output-pattern"},
+                "help|h", "usage|?"
+              );
 
 GetOptions( \%opts, @options ) or pod2usage(2);
 
+# clean-up defaults
+@{ $opts{"input-files"} }    or delete $opts{"input-files"};
+@{ $opts{"output-files"} }   or delete $opts{"output-files"};
+@{ $opts{"output-pattern"} } or delete $opts{"output-pattern"};
+
+# check ...
 defined( $opts{help} )
   and $opts{help}
   and pod2usage(
@@ -44,13 +59,9 @@ _ARRAY( $opts{"input-files"} )
                );
 
 my %in2out =
-    _ARRAY( $opts{"input-files"} )
+    _ARRAY( $opts{"output-files"} )
   ? zip( @{ $opts{"input-files"} }, @{ $opts{"output-files"} } )
-  : map {
-    my $f = $_;
-    $f =~ s/$opts{"output-pattern"}->[0]/$opts{"output-pattern"}->[1]/;
-    ( $_, $f );
-  } @{ $opts{"input-files"} };
+  : ();
 my %cfg = load_config();
 
 my $coder = JSON->new();
@@ -66,19 +77,32 @@ foreach my $filename ( @{ $opts{"input-files"} } )
                                              flatten_to_hash => 1,
                                            }
                                          );
-    @script_files = keys %{$scripts};
-    scalar(@script_files) > 1
-      and pod2usage(
+    if ( $opts{"output-files"} )
+    {
+        @script_files = keys %{$scripts};
+        scalar(@script_files) > 1
+          and pod2usage(
                    {
                      -message => "filename $filename is ambigious: " . join( ", ", @script_files ),
                      -exitval => 1
                    }
-      );
-    scalar(@script_files) < 1
-      and next;    # file not found or not parsable ...
-                   # merge into default and previous loaded config ...
-    my $json = $coder->pretty->encode( $scripts->{ $script_files[0] } );
-    write_file( $in2out{$filename}, $json );
+          );
+        scalar(@script_files) < 1
+          and next;    # file not found or not parsable ...
+                       # merge into default and previous loaded config ...
+        my $json = $coder->pretty->encode( $scripts->{ $script_files[0] } );
+        write_file( $in2out{$filename}, $json );
+    }
+    else
+    {
+        while ( my ( $script_file, $script ) = each(%$scripts) )
+        {
+            my $json = $coder->pretty->encode($script);
+            ( my $target = $script_file ) =~
+              s/$opts{"output-pattern"}->[0]/$opts{"output-pattern"}->[1]/;
+            write_file( $target, $json );
+        }
+    }
 }
 
 __END__
