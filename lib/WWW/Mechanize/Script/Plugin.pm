@@ -25,6 +25,24 @@ sub get_check_value
     return $check->{check}->{$value_name} // $self->{check}->{$value_name};
 }
 
+sub get_check_value_as_bool
+{
+    my ( $self, $check, $value_name ) = @_;
+
+    $value_name or return;
+
+    my $val = $check->{check}->{$value_name} // $self->{check}->{$value_name};
+
+    defined($val) or return;
+    ref($val) and return $val;
+    if(_STRING($val))
+    {
+	$val =~ m/(?:true|on|yes)/i and return 1;
+    }
+
+    return 0;
+}
+
 sub can_check
 {
     my ( $self, $check ) = @_;
@@ -34,7 +52,7 @@ sub can_check
     foreach my $value_name (@value_names)
     {
         my $cv = $self->get_check_value( $check, $value_name );
-        $cv and $ok = 1;
+        $cv and $ok = 1 and last;
     }
 
     return $ok;
