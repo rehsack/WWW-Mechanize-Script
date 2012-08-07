@@ -7,6 +7,8 @@ use v5.10.1;
 
 use Getopt::Long;
 
+use Params::Util qw(_ARRAY);
+
 use WWW::Mechanize::Script::Util qw(:ALL);
 use WWW::Mechanize::Script;
 
@@ -40,6 +42,8 @@ my $wms = WWW::Mechanize::Script->new( \%cfg );
 
 my @script_files = find_scripts( \%cfg, $opts{file} );
 
+_ARRAY( $cfg{wtscript_extensions} )
+  and Config::Any::WTScript->extensions( @{ $cfg{wtscript_extensions} } );
 my ( $code, @msgs ) = (0);
 eval {
     my @script;

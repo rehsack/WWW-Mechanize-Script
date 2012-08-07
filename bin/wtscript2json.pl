@@ -54,6 +54,8 @@ my %in2out =
 my %cfg = load_config();
 
 my $coder = JSON->new();
+_ARRAY( $cfg{wtscript_extensions} )
+  and Config::Any::WTScript->extensions( @{ $cfg{wtscript_extensions} } );
 foreach my $filename ( @{ $opts{"input-files"} } )
 {
     my @script_files = find_scripts( \%cfg, $filename );

@@ -22,6 +22,7 @@
 	},
 	"request" : {}
     },
+    "wtscript_extensions" : [ "txt", "wts", "wtscript" ],
     "script_dirs" : ["/data/devel/Vodafone/vzapp-nagios/nagios-plugins/check_web_config"],
     "summary" : {
 	"template" : "[% CODE_NAME; IF MESSAGES.size > 0 %] - [% MESSAGES.join(', '); END %]\n",

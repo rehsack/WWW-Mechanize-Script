@@ -21,7 +21,7 @@ Parses a wtscript file and converts it to a set of test objects.
 use strict;
 use warnings;
 
-use vars qw($VERSION);
+use vars qw($VERSION @extensions);
 
 use base 'Config::Any::Base';
 
@@ -31,7 +31,7 @@ use File::Slurp qw(read_file);
 use constant ST_FILE       => 0;
 use constant ST_TEST_BLOCK => 1;
 
-$VERSION = '0.001_001';
+$VERSION = 0.001_001;
 
 # horizontal space regexp
 my $reHS = qr/[\t ]/;
@@ -40,15 +40,21 @@ my $reWORD = qr/(?: (?: [^=)\s] | [^)\s] (?!>) )+ )/x;
 # eat comments regexp
 my $reCOMMENT = qr/(?: \s*? ^ \s* \# .* )+/mx;
 
-=head2 extensions( )
+=head2 extensions(;@extensions)
 
-return an array of valid extensions (C<txt>, C<wts>).
+When list of extensions to accept given, replace current list with given list.
+
+Return an array of valid extensions (default: C<wts>, C<wtscript>).
 
 =cut
 
+@extensions = qw(wts wtscript);
+
 sub extensions
 {
-    return qw(txt wts);
+    my ( $class, @new_ext );
+    @new_ext and @extensions = @new_ext;
+    return @extensions;
 }
 
 =head2 load( $file )
