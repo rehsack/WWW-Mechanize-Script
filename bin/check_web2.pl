@@ -40,10 +40,10 @@ do
 
 my $wms = WWW::Mechanize::Script->new( \%cfg );
 
-my @script_files = find_scripts( \%cfg, $opts{file} );
-
 _ARRAY( $cfg{wtscript_extensions} )
   and Config::Any::WTScript->extensions( @{ $cfg{wtscript_extensions} } );
+my @script_files = find_scripts( \%cfg, $opts{file} );
+
 my ( $code, @msgs ) = (0);
 eval {
     my @script;
