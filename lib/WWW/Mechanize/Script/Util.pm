@@ -7,11 +7,13 @@ use base qw/Exporter/;
 use vars qw/$VERSION @EXPORT @EXPORT_OK %EXPORT_TAGS/;
 
 use Config::Any;
+use Cwd qw(realpath);
 use File::Basename qw(fileparse);
 use File::ConfigDir qw(config_dirs);
 use File::Find::Rule;
 use Hash::Merge ();
 # use Hash::MoreUtils;
+use List::MoreUtils qw(uniq);
 use Params::Util qw(_HASH _ARRAY _STRING);
 use Pod::Usage;
 
@@ -91,7 +93,7 @@ sub load_config
               );
 
     # find config file
-    my @cfg_dirs    = config_dirs();
+    my @cfg_dirs    = uniq map { realpath($_) } config_dirs();
     my $progname    = fileparse( $0, qr/\.[^.]*$/ );
     my @cfg_pattern = map { $progname . "." . $_ } Config::Any->extensions();
     my @cfg_files   = File::Find::Rule->file()->name(@cfg_pattern)->maxdepth(1)->in(@cfg_dirs);
