@@ -71,19 +71,9 @@ sub load_config
     _HASH( $_[0] ) and %opts = %{ $_[0] };
     my %cfg = (
         defaults => {
-            terse       => 'failed_only',
-            save_output => 'yes',           # report ...
-            show_html   => 'yes',           # report ...
-            check => {
-                       ignore_case => 'yes',
-                       text_forbid => [
-                                        'Premature end of script headers',
-                                        'Error processing directive',
-                                        'XML Parsing partner document',
-                                        'sun.io.MalformedInputException',
-                                        'an error occurred while processing this directive'
-                                      ],
-                     },
+                      terse       => 'failed_only',
+                      save_output => 'yes',           # report ...
+                      show_html   => 'yes',           # report ...
                     },
         request => {
             agent => {
