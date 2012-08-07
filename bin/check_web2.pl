@@ -5,15 +5,9 @@ use warnings;
 
 use v5.10.1;
 
-use Config::Any;
-use File::Basename qw(fileparse);
-use File::ConfigDir qw(config_dirs);
-use File::Find::Rule;
 use Getopt::Long;
-use Hash::Merge ();
-use Pod::Usage;
-use POSIX qw(isatty);
 
+use WWW::Mechanize::Script::Util qw(:ALL);
 use WWW::Mechanize::Script;
 
 my $VERSION = 0.001;
@@ -31,63 +25,9 @@ defined( $opts{help} )
                  }
                );
 defined( $opts{usage} ) and $opts{usage} and pod2usage(1);
-defined( $opts{file} ) or isatty(*STDOUT) ? pod2usage(1) : die "Missing --file argument";
+opt_required_all( \%opts, qw(file) );
 
-my %cfg = (
-          defaults => {
-              save_output    => 'yes',
-              ignore_case    => 'yes',
-              show_html      => 'yes',
-              accept_cookies => 'yes',
-              show_cookie    => 'yes',
-              show_headers   => 'yes',
-              send_cookie    => 'yes',
-              terse          => 'failed_only',
-              request        => {
-                  agent => {
-                      agent => (
-                          ( $opts{file} =~ /(_w$|^wap\/)/ )
-                          ? "Nokia6210/1.0 (03.01) UP.Link/5.0.0.4 VZDE-check_wap $VERSION"
-                          : "Mozilla/5.0 (Windows; U; WinNT4.0; en-US; rv: VZDE-check_web $VERSION)"
-                      )
-                  }
-              },
-              text_forbid => [
-                               'Premature end of script headers',
-                               'Error processing directive',
-                               'XML Parsing partner document',
-                               'sun.io.MalformedInputException',
-                               'an error occurred while processing this directive'
-                             ],
-                      },
-          );
-
-# find config file
-my @cfg_dirs    = config_dirs();
-my $progname    = fileparse( $0, qr/\.[^.]*$/ );
-my @cfg_pattern = map { $progname . "." . $_ } Config::Any->extensions();
-my @cfg_files   = File::Find::Rule->file()->name(@cfg_pattern)->maxdepth(1)->in(@cfg_dirs);
-if (@cfg_files)
-{
-    my $merger = Hash::Merge->new('LEFT_PRECEDENT');
-    # read config file(s)
-    my $all_cfg = Config::Any->load_files(
-                                           {
-                                             files           => [@cfg_files],
-                                             use_ext         => 1,
-                                             flatten_to_hash => 1,
-                                           }
-                                         );
-
-    foreach my $filename (@cfg_files)
-    {
-        defined( $all_cfg->{$filename} )
-          or next;    # file not found or not parsable ...
-                      # merge into default and previous loaded config ...
-        %cfg = %{ $merger->merge( \%cfg, $all_cfg->{$filename} ) };
-    }
-}
-
+my %cfg = load_config( \%opts );
 do
 {
     my %cfgvar = ( OPTS_FILE => $opts{file} );
@@ -98,21 +38,7 @@ do
 
 my $wms = WWW::Mechanize::Script->new( \%cfg );
 
-if ( -f $opts{file} and -r $opts{file} )
-{
-    @cfg_files = ( $opts{file} );
-}
-else
-{
-    my ( $volume, $directories, $fn ) = File::Spec->splitpath( $opts{file} );
-    @cfg_dirs = config_dirs( $cfg{script_dir} // "check_web" );
-    @cfg_dirs =
-      grep { -d $_ }
-      map { File::Spec->catdir( $_, $directories ) }
-      config_dirs( $cfg{script_dir} // "check_web" );    # XXX basename $0
-    @cfg_pattern = map { $fn . "." . $_ } Config::Any->extensions();
-    @cfg_files = File::Find::Rule->file()->name(@cfg_pattern)->maxdepth(1)->in(@cfg_dirs);
-}
+@cfg_files = find_scripts( \%cfg, $opts{file} );
 
 my ( $code, @msgs ) = (0);
 eval {
@@ -144,7 +70,7 @@ check_web2 - allows checking of website according to configured specifications
 
 =head1 DESCRIPTION
 
-check_web2 is intended to be used to check web-sites accoring a configuration.
+check_web2 is intended to be used to check web-sites according a configuration.
 The configuration covers the request configuration (including agent part) and
 check configuration to specify check parameters.
 
