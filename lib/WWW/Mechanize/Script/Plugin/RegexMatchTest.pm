@@ -5,9 +5,11 @@ use warnings;
 
 use parent qw(WWW::Mechanize::Script::Plugin);
 
+# ABSTRACT: check for required/forbidden text via regular expression in response
+
 use Params::Util qw(_ARRAY0);
 
-our $VERSION = '0.001_002';
+our $VERSION = '0.001_003';
 
 use 5.014;
 
@@ -25,7 +27,9 @@ sub check_response
     my $ignore_case = $self->get_check_value_as_bool( $check, "ignore_case" );
     my $content = $mech->is_html() ? $mech->text() : $mech->content();
 
-    defined($regex_require) and ref($regex_require) ne "ARRAY" and $regex_require = [$regex_require];
+    defined($regex_require)
+      and ref($regex_require) ne "ARRAY"
+      and $regex_require = [$regex_require];
     defined($regex_forbid) and ref($regex_forbid) ne "ARRAY" and $regex_forbid = [$regex_forbid];
 
     my @match_fails;

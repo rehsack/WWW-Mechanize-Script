@@ -8,13 +8,12 @@ use File::Path qw(make_path);
 use Hash::Merge ();
 use IO::File;
 use Module::Pluggable::Object ();
-use Template                  ();
-use WWW::Mechanize            ();
-use WWW::Mechanize::Timed     ();
+use Params::Util qw(_HASH);
+use Template              ();
+use WWW::Mechanize        ();
+use WWW::Mechanize::Timed ();
 
-=head1 NAME
-
-WWW::Mechanize::Script - fetch websites and executes tests on the results
+# ABSTRACT: fetch websites and executes tests on the results
 
 =head1 SYNOPSIS
 
@@ -27,11 +26,44 @@ WWW::Mechanize::Script - fetch websites and executes tests on the results
     $wms->run_test(%{$test});
   }
 
-=head1 METHODS
-
 =cut
 
-our $VERSION = '0.001_002';
+our $VERSION = '0.001_003';
+
+=method new(\%cfg)
+
+Instantiates new WWW::Mechanize::Script object.
+
+Configuration hash looks like:
+
+    defaults => {
+	check => { # check defaults
+	    "code_cmp" : ">",
+	    "XXX_code" : 2,
+	    "ignore_case" : true,
+	},
+	request => { # request defaults
+	    agent => { # LWP::UserAgent defaults
+		agent => "Agent Adderly",
+		accept_cookies => 'yes',    # check LWP::UA param
+		show_cookie    => 'yes',    # check LWP::UA param
+		show_headers   => 'yes',    # check LWP::UA param
+		send_cookie    => 'yes',    # check LWP::UA param
+	    },
+	},
+    },
+    script_dirs => [qw(/old/wtscripts /new/json_scripts)],
+    summary => {
+        template => "[% CODE_NAME; IF MESSAGES.size > 0 %] - [% MESSAGES.join(', '); END %]\n",
+        target => "-"
+    },
+    report => {
+        template => "[% USE Dumper; Dumper.dump(RESPONSE) %]",
+        target => "/tmp/@OPTS_FILE@.log",
+        append => true
+    }
+
+=cut
 
 sub new
 {
@@ -39,10 +71,23 @@ sub new
 
     my $self = bless( { cfg => { %{$cfg} } }, $class );
 
-    my $default = $cfg->{default};
-
     return $self;
 }
+
+=method _gen_code_compute
+
+Interpretes one of following config hash parameters
+
+    defaults => {
+	check => { # check defaults
+	    code_cmp => ">",
+	    code_func => 'my ($cur,$new) = @_; return $cur > $new ? $cur : $new;'
+	}
+    }
+
+When none of them are there, the sample in defaults->check->code_func is used.
+
+=cut
 
 sub _gen_code_compute
 {
@@ -76,7 +121,7 @@ sub _gen_code_compute
     return $compute_code;
 }
 
-=head2 test_plugins( )
+=method test_plugins( )
 
 The C<plugins()> classmethod returns the names of configuration loading plugins as 
 found by L<Module::Pluggable::Object|Module::Pluggable::Object>.
@@ -110,6 +155,13 @@ sub test_plugins
     return @tp;
 }
 
+=method get_request_value($request,$value_name)
+
+Returns the value for creating the request - either from current script
+or from defaults (C<< defaults->request->$value_name >>).
+
+=cut
+
 sub get_request_value
 {
     my ( $self, $request, $value_name ) = @_;
@@ -138,16 +190,43 @@ sub _get_target
     return $target;
 }
 
-my @codes = qw(OK WARNING CRITICAL UNKNOWN DEPENDENT EXCEPTION);
+=method summarize($code,@msgs)
+
+Generates the summary passing the template in the configuration of
+C<< config->summary >> into L<Template::Toolkit>.
+
+Following variables are provided for the template processing:
+
+=over 4
+
+=item CODE
+
+The accumulated return code of all executed checks computed via
+L</_gen_code_compute>.
+
+=item MESSAGES
+
+Collected messages returned of all executed checks.
+
+=back
+
+Plus all constants named in the C<< config->templating->vars >> hash and
+those in C<< config->summary->vars >> hash.
+
+The output target is guessed from C<< config->summary->target >> whereby
+the special target I<-> is interpreted as C<stdout>.
+
+=cut
 
 sub summarize
 {
     my ( $self, $code, @msgs ) = @_;
 
     my %vars = (
-                 CODE      => $code,
-                 CODE_NAME => $codes[$code] // $codes[-1],
-                 MESSAGES  => [@msgs]
+                 %{ _HASH( $self->{cfg}->{templating}->{vars} ) // {} },
+                 %{ _HASH( $self->{cfg}->{report}->{vars} )     // {} },
+                 CODE     => $code,
+                 MESSAGES => [@msgs]
                );
 
     my $input    = $self->{cfg}->{summary}->{source} // \$self->{cfg}->{summary}->{template};
@@ -159,15 +238,71 @@ sub summarize
     return;
 }
 
+=method gen_report($full_test, $mech, $code, @msgs)
+
+Generates a report for a test within a script by passing the template
+in the configuration of C<< config->report >> into L<Template::Toolkit>.
+
+Following variables are provided for the template processing:
+
+=over 4
+
+=item CODE
+
+The accumulated return code of all executed checks computed via
+L</_gen_code_compute>.
+
+=item MESSAGES
+
+Collected messages returned of all executed checks.
+
+=item RESPONSE
+
+Hash containing the following L<HTTP::Response|response> items:
+
+=over 8
+
+=item CODE
+
+HTTP response code 
+
+=item CONTENT
+
+Content of the response
+
+=item BASE
+
+The base URI for this response
+
+=item HEADER
+
+Header keys/values as perl hash
+
+=back
+
+=back
+
+Plus all constants named in the C<< config->templating->vars >> hash and
+those in C<< config->report->vars >> hash.
+
+The output target is guessed from C<< config->summary->target >> whereby
+the special target I<-> is interpreted as C<stdout>.
+
+When the C<< config->summary->append >> flag is set and contains a true
+value, the output is appended to an existing target.
+
+=cut
+
 sub gen_report
 {
     my ( $self, $full_test, $mech, $code, @msgs ) = @_;
     my $response = $mech->response();
     my %vars = (
-                 CODE      => $code,
-                 CODE_NAME => $codes[$code] // $codes[-1],
-                 MESSAGES  => [@msgs],
-                 RESPONSE  => {
+                 %{ _HASH( $self->{cfg}->{templating}->{vars} ) // {} },
+                 %{ _HASH( $self->{cfg}->{report}->{vars} )     // {} },
+                 CODE     => $code,
+                 MESSAGES => [@msgs],
+                 RESPONSE => {
                                CODE    => $response->code(),
                                CONTENT => $response->content(),
                                BASE    => $response->base(),
@@ -175,7 +310,6 @@ sub gen_report
                                            map { $_ => $response->headers()->header($_) }
                                              $response->headers()->header_field_names()
                                          },
-                               CODE => $response->code(),
                              }
                );
 
@@ -187,6 +321,16 @@ sub gen_report
 
     return;
 }
+
+=method run_script(@script)
+
+Runs a script consisting of at least one test and generates a summary if
+configured. The code to accumulate the return codes from each test is taken
+from C<< config->defaults->check >> as described in L</_gen_code_compute>.
+
+Returns the accumulated return codes from all tests in the given script.
+
+=cut
 
 sub run_script
 {
@@ -209,6 +353,32 @@ sub run_script
 
     return ( $code, @msgs );
 }
+
+=method run_test(\%test)
+
+Runs one test and generates a report if configured (C<< config->report >>).
+
+The request is constructed from C<< test->request >> whereby the part
+below C<< test->request->agent >> is used to parametrize a new instance
+of L<WWW::Mechanize::Timed>.
+
+All keys defined below C<< test->request->agent >> are taken as
+setter of WWW::Mechanize::Timed or a inherited class.
+
+If there is a hash defined at C<< test->request->http_headers >>, those
+headers are passed along with the URI specified at C<< test->request->uri >>
+to GET/POST or whatever you want to do (C<< test->request->method >>).
+
+Which checks are executed is defined below C<< test->check >>. Each valid
+plugin below the I<WWW::Mechanize::Script::Plugin> namespace is approved
+for relevance for the test (see L<WWW::Mechanize::Script::Plugin/can_check>).
+
+The code to accumulate the return codes from each test is taken
+from C<< test->check >> as described in L</_gen_code_compute>.
+
+Returns the accumulated return codes from all checks in the given tests.
+
+=cut
 
 sub run_test
 {

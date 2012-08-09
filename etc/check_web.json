@@ -20,12 +20,19 @@
 		"an error occurred while processing this directive"
 	    ]
 	},
-	"request" : {}
+	"request" : {
+	    "method" : "GET"
+	}
     },
     "wtscript_extensions" : [ "txt", "wts", "wtscript" ],
     "script_dirs" : ["/data/devel/Vodafone/vzapp-nagios/nagios-plugins/check_web_config"],
+    "templating" : {
+	"vars" : {
+	    "CODE_NAMES" : ["OK", "WARNING", "CRITICAL", "UNKNOWN", "DEPENDENT", "EXCEPTION"]
+	},
+    },
     "summary" : {
-	"template" : "[% CODE_NAME; IF MESSAGES.size > 0 %] - [% MESSAGES.join(', '); END %]\n",
+	"template" : "[% CODE_NAMES.$CODE; IF MESSAGES.size > 0 %] - [% MESSAGES.join(', '); END %]\n",
 	"target" : "-"
     },
     "report" : {

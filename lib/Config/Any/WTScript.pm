@@ -1,8 +1,6 @@
 package Config::Any::WTScript;
 
-=head1 NAME
-
-Config::Any::WTScript - Parse wtscript files.
+# ABSTRACT: Parse wtscript files.
 
 =head1 SYNOPSIS
 
@@ -13,8 +11,6 @@ Config::Any::WTScript - Parse wtscript files.
 =head1 DESCRIPTION
 
 Parses a wtscript file and converts it to a set of test objects.
-
-=head1 CLASS METHODS
 
 =cut
 
@@ -31,7 +27,7 @@ use File::Slurp qw(read_file);
 use constant ST_FILE       => 0;
 use constant ST_TEST_BLOCK => 1;
 
-$VERSION = '0.001_002';
+$VERSION = '0.001_003';
 
 # horizontal space regexp
 my $reHS = qr/[\t ]/;
@@ -40,7 +36,7 @@ my $reWORD = qr/(?: (?: [^=)\s] | [^)\s] (?!>) )+ )/x;
 # eat comments regexp
 my $reCOMMENT = qr/(?: \s*? ^ \s* \# .* )+/mx;
 
-=head2 extensions(;@extensions)
+=method extensions(;@extensions)
 
 When list of extensions to accept given, replace current list with given list.
 
@@ -57,7 +53,7 @@ sub extensions
     return @extensions;
 }
 
-=head2 load( $file )
+=method load( $file )
 
 Parses wtscript text data passed in a scalar variable C<$data>.
 
@@ -407,18 +403,16 @@ sub _parse_scalar
     }
 }
 
-=head1 COPYRIGHT
+=head1 ACKNOWLEDGEMENTS
 
-Copyright (c) 2001-2003 Ilya Martynov.  All rights reserved.
-
-This program is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
+The original parsing code is from L<HTTP::WebTest::Parser>, written by
+Ilya Martynov.
 
 =head1 SEE ALSO
 
-L<HTTP::WebTest|HTTP::WebTest>
+L<HTTP::WebTest>
 
-L<HTTP::WebTest::API|HTTP::WebTest::API>
+L<HTTP::WebTest::Parser>
 
 =cut
 

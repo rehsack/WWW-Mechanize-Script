@@ -3,6 +3,9 @@
 use strict;
 use warnings;
 
+# PODNAME: check_web2
+# ABSTRACT: allows checking of website according to configured specifications
+
 use v5.10.1;
 
 use Getopt::Long;
@@ -12,7 +15,7 @@ use Params::Util qw(_ARRAY);
 use WWW::Mechanize::Script::Util qw(:ALL);
 use WWW::Mechanize::Script;
 
-my $VERSION = 0.001;
+my $VERSION = '0.001_003';
 my %opts;
 my @options = ( "file=s", "help|h", "usage|?" );
 
@@ -67,10 +70,6 @@ $@ and say("UNKNOWN - $@");
 exit( $@ ? 255 : $code );
 
 __END__
-
-=head1 NAME
-
-check_web2 - allows checking of website according to configured specifications
 
 =head1 DESCRIPTION
 

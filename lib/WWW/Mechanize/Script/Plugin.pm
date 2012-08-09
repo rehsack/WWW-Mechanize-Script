@@ -3,7 +3,9 @@ package WWW::Mechanize::Script::Plugin;
 use strict;
 use warnings;
 
-our $VERSION = '0.001_002';
+# ABSTRACT: plugin base class for check plugins
+
+our $VERSION = '0.001_003';
 
 use 5.014;
 

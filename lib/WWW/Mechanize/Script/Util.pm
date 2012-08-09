@@ -6,18 +6,19 @@ use warnings;
 use base qw/Exporter/;
 use vars qw/$VERSION @EXPORT @EXPORT_OK %EXPORT_TAGS/;
 
+# ABSTRACT: some basic utility functions for scripts
+
 use Config::Any;
 use Cwd qw(realpath);
 use File::Basename qw(fileparse);
 use File::ConfigDir qw(config_dirs);
 use File::Find::Rule;
 use Hash::Merge ();
-# use Hash::MoreUtils;
 use List::MoreUtils qw(uniq);
 use Params::Util qw(_HASH _ARRAY _STRING);
 use Pod::Usage;
 
-$VERSION = '0.001_002';
+$VERSION = '0.001_003';
 
 @EXPORT      = ();
 @EXPORT_OK   = qw(opt_required_all opt_required_one opt_exclusive load_config find_scripts);

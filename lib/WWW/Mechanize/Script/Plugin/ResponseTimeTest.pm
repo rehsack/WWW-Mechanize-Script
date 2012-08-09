@@ -5,7 +5,9 @@ use warnings;
 
 use parent qw(WWW::Mechanize::Script::Plugin);
 
-our $VERSION = '0.001_002';
+# ABSTRACT: check response time of request
+
+our $VERSION = '0.001_003';
 
 use 5.014;
 

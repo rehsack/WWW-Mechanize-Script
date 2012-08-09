@@ -3,6 +3,9 @@
 use strict;
 use warnings;
 
+# PODNAME: wtscript2json
+# ABSTRACT: convert read configuration into JSON
+
 use v5.10.1;
 
 use File::Slurp qw(write_file);
@@ -15,7 +18,7 @@ use Pod::Usage;
 use WWW::Mechanize::Script::Util qw(:ALL);
 use WWW::Mechanize::Script;
 
-our $VERSION = '0.001_002';
+our $VERSION = '0.001_003';
 my %opts = (
              "input-files"    => [],
              "output-files"   => [],
@@ -107,80 +110,3 @@ foreach my $filename ( @{ $opts{"input-files"} } )
 
 __END__
 
-=head1 NAME
-
-check_web2 - allows checking of website according to configured specifications
-
-=head1 DESCRIPTION
-
-check_web2 is intended to be used to check web-sites according a configuration.
-The configuration covers the request configuration (including agent part) and
-check configuration to specify check parameters.
-
-See C<WWW::Mechanize::Script> for details about the configuration options.
-
-=head2 HISTORY
-
-This script is created as successor of an check_web script of a nagios setup
-based on HTTP::WebCheck. This module isn't longer maintained, so decision
-was made to create a new environment simulating the old one basing on
-WWW::Mechanize.
-
-=head1 SYNOPSIS
-
-  $ check_web2 --file domain1/site1.json
-  $ check_web2 --file domain2/site1.yml
-  # for compatibility
-  $ check_web2 --file domain1/site2.wts
-
-=head1 AUTHOR
-
-Jens Rehsack, C<< <rehsack at cpan.org> >>
-
-=head1 BUGS
-
-Please report any bugs or feature requests to C<bug-www-mechanize-script at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=WWW-Mechanize-Script>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
-
-=head1 SUPPORT
-
-You can find documentation for this module with the perldoc command.
-
-    perldoc WWW:Mechanize::Script
-
-You can also look for information at:
-
-=over 4
-
-=item * RT: CPAN's request tracker (report bugs here)
-
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=WWW-Mechanize-Script>
-
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/WWW-Mechanize-Script>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/WWW-Mechanize-Script>
-
-=item * Search CPAN
-
-L<http://search.cpan.org/dist/WWW-Mechanize-Script/>
-
-=back
-
-=head1 ACKNOWLEDGEMENTS
-
-=head1 LICENSE AND COPYRIGHT
-
-Copyright 2012 Jens Rehsack.
-
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
-
-See http://dev.perl.org/licenses/ for more information.
-
-=cut

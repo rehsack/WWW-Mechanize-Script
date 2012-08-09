@@ -5,9 +5,11 @@ use warnings;
 
 use parent qw(WWW::Mechanize::Script::Plugin);
 
+# ABSTRACT: check for required/forbidden text in response
+
 use Params::Util qw(_ARRAY0);
 
-our $VERSION = '0.001_002';
+our $VERSION = '0.001_003';
 
 use 5.014;
 
@@ -26,7 +28,7 @@ sub check_response
     my $content = $mech->is_html() ? $mech->text() : $mech->content();
 
     defined($text_require) and ref($text_require) ne "ARRAY" and $text_require = [$text_require];
-    defined($text_forbid) and ref($text_forbid) ne "ARRAY" and $text_forbid = [$text_forbid];
+    defined($text_forbid)  and ref($text_forbid)  ne "ARRAY" and $text_forbid  = [$text_forbid];
 
     my @match_fails;
     my $code = 0;
