@@ -51,6 +51,10 @@ defined( $opts{usage} ) and $opts{usage} and pod2usage(1);
 opt_required_all( \%opts, qw(input-files) );
 opt_exclusive( \%opts, qw(output-files output-pattern) );
 opt_required_one( \%opts, qw(output-files output-pattern) );
+
+_ARRAY( $opts{"input-files"} ) and $opts{"input-files"} = [ split(",", join(",", @{$opts{"input-files"}}) ) ];
+_ARRAY( $opts{"output-files"} ) and $opts{"output-files"} = [ split(",", join(",", @{$opts{"output-files"}}) ) ];
+
 _ARRAY( $opts{"input-files"} )
   and _ARRAY( $opts{"output-files"} )
   and scalar( @{ $opts{"input-files"} } ) != scalar( @{ $opts{"output-files"} } )
@@ -110,3 +114,41 @@ foreach my $filename ( @{ $opts{"input-files"} } )
 
 __END__
 
+=head1 DESCRIPTION
+
+wtscript2json is a helper to convert WebTest Script files into a modern
+format. Currently the format is hard-coded to JSON.
+
+To avoid conflicts or duplicates running check_web(2), it's recommended to
+use different C<script_dirs> in special configuration files for check_web(2)
+and wtscript2json (check-web2.json vs. wtscript2json.json vs. check_web.json
+as common configuration file for both). See
+L<WWW::Mechanize::Script::Util/load_config> for further information.
+
+=head1 SYNOPSIS
+
+  # search in $config->{script_dirs} for any loadable script config
+  $ wtscript2json --input-files service1/script1,service1/script2,service2/cool_script \
+      --output-files /opt/new_checks/service1/script1.json \
+      --output-files /opt/new_checks/service1/script2.json \
+      --output-files /opt/new_checks/service2/cool_script.json
+
+  # in-location conversion ...
+  $ find . -name "*splunk*"
+  ./check_web_config/log/test_splunk_1.txt
+  ./check_web_config/log/test_splunk_2.txt
+  ./check_web_config/log/test_splunk_3.txt
+  ./check_web_config/log/test_splunk_4.txt
+  $ wtscript2json --input-files log/test_splunk[1-4] --output-pattern .txt .json
+  $ find . -name "*splunk*"
+  $ find . -name "*splunk*"
+  ./check_web_config/log/test_splunk_1.txt
+  ./check_web_config/log/test_splunk_2.txt
+  ./check_web_config/log/test_splunk_3.txt
+  ./check_web_config/log/test_splunk_4.txt
+  ./check_web_config/log/test_splunk_4.json
+  ./check_web_config/log/test_splunk_3.json
+  ./check_web_config/log/test_splunk_2.json
+  ./check_web_config/log/test_splunk_1.json
+
+=cut

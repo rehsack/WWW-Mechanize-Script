@@ -373,6 +373,11 @@ Which checks are executed is defined below C<< test->check >>. Each valid
 plugin below the I<WWW::Mechanize::Script::Plugin> namespace is approved
 for relevance for the test (see L<WWW::Mechanize::Script::Plugin/can_check>).
 
+The test specification is enriched by the configuration in
+C<< config->defaults >> using L<Hash::Merge> with the I<LEFT_PRECEDENT>
+ruleset. Please care about the ruleset especially when merging arrays
+is to expect.
+
 The code to accumulate the return codes from each test is taken
 from C<< test->check >> as described in L</_gen_code_compute>.
 

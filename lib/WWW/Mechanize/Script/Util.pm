@@ -24,6 +24,43 @@ $VERSION = '0.001_003';
 @EXPORT_OK   = qw(opt_required_all opt_required_one opt_exclusive load_config find_scripts);
 %EXPORT_TAGS = ( ALL => \@EXPORT_OK );
 
+=head1 EXPORTS
+
+This module doesn't export anything by default, but any of the following on request:
+
+=over 4
+
+=item *
+
+opt_required_all
+
+=item *
+
+opt_required_one
+
+=item *
+
+opt_exclusive
+
+=item *
+
+load_config
+
+=item *
+
+find_scripts
+
+=back
+
+=head1 FUNCTIONS
+
+=head2 opt_required_one(\%opt_hash, @opt_names)
+
+Fails by invoking pod2usage when none of the options in @opt_names are
+given in %opt_hash.
+
+=cut
+
 sub opt_required_one
 {
     my ( $opt_hash, @opt_names ) = @_;
@@ -34,6 +71,13 @@ sub opt_required_one
     pod2usage( -exitval => 1,
                -message => "Missing at least one of " . join( ", ", map { "--$_" } @opt_names ) );
 }
+
+=head2 opt_required_all(\%opt_hash, @opt_names)
+
+Fails by invoking pod2usage when any of the options in @opt_names are
+missing in %opt_hash.
+
+=cut
 
 sub opt_required_all
 {
@@ -51,6 +95,13 @@ sub opt_required_all
              );
 }
 
+=head2 opt_exclusive(\%opt_hash, @opt_names)
+
+Fails by invoking pod2usage when more than one of the options in @opt_names
+are given in %opt_hash.
+
+=cut
+
 sub opt_exclusive
 {
     my ( $opt_hash, @opt_names ) = @_;
@@ -67,6 +118,20 @@ sub opt_exclusive
                  . " are mutual exclusive"
              );
 }
+
+=head2 load_config(;\%opt_hash)
+
+Tries to load the primary configuration. It looks in any directory returned
+by L<File::ConfigDir/config_dirs> for files named either I<check_web> or
+like the basename of the invoking script (C<$0>) with any extension
+supported by L<Config::Any>. The found configuration files are merged into
+a single configuration hash using L<Hash::Merge> with the I<LEFT_PRECEDENT>
+ruleset.
+
+When an option hash is given, the default agent is computed based on
+the value of I<$opt_hash{file}>.
+
+=cut
 
 sub load_config
 {
@@ -96,7 +161,7 @@ sub load_config
     # find config file
     my @cfg_dirs = uniq map { realpath($_) } config_dirs();
     my $progname = fileparse( $0, qr/\.[^.]*$/ );
-    my @cfg_pattern = map { ( $progname . "." . $_, "check_web." . $_ ) } Config::Any->extensions();
+    my @cfg_pattern = map { ( "check_web." . $_, $progname . "." . $_ ) } Config::Any->extensions();
     my @cfg_files = File::Find::Rule->file()->name(@cfg_pattern)->maxdepth(1)->in(@cfg_dirs);
     if (@cfg_files)
     {
@@ -121,6 +186,65 @@ sub load_config
 
     return %cfg;
 }
+
+=head2 find_scripts(\%cfg,@patterns)
+
+Finds scripts based on configuration and given patterns.
+
+=over 4
+
+=item *
+
+When C<%cfg> contains an array with full qualified path names below the
+I<script_dirs>, those directories are scanned. When the directories are
+relative, the are concatenated using L<File::ConfigDir/config_dirs> (each
+entry in the I<script_dirs> is evaluated separately).
+
+When C<%cfg> contains a string below the key I<script_dirs>, the
+I<config_dirs($cfg{script_dirs})> is used to find the scripts.
+
+In any other case, I<config_dirs("check_web")> is used.
+
+=item *
+
+The C<@patterns> list must contain one or more file names or expandable
+shell patterns with or without directory parts and/or extensions.
+
+Valid entries are for example:
+
+=over 8
+
+=item -
+
+qw(check_host_app_one)
+
+=item -
+
+qw(check_host/app_one)
+
+=item -
+
+qw(check_host_app_one.json)
+
+=item -
+
+qw(check_host/app_one.yml)
+
+=item -
+
+qw(check_splunk_[1-5])
+
+=item -
+
+qw(splunk/test*)
+
+=back
+
+=back
+
+Returns the list of found script file names.
+
+=cut
 
 sub find_scripts
 {
