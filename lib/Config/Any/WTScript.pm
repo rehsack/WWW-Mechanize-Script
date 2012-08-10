@@ -139,7 +139,7 @@ MSG
     return \@configs;
 }
 
-sub eval_in_playground
+sub _eval_in_playground
 {
     my $code = shift;
 
@@ -153,11 +153,11 @@ $code
 CODE
 }
 
-sub make_sub_in_playground
+sub _make_sub_in_playground
 {
     my $code = shift;
 
-    return eval_in_playground("sub { local \$^W; $code }");
+    return _eval_in_playground("sub { local \$^W; $code }");
 }
 
 sub _parse
@@ -360,7 +360,7 @@ sub _parse_scalar
         {
             # variable interpolation impossible - just evalute string
             # to get rid of escape chars
-            my $ret = eval_in_playground($extracted);
+            my $ret = _eval_in_playground($extracted);
 
             chomp $@;
             die "Eval error\n$@\n" if $@;
@@ -371,7 +371,7 @@ sub _parse_scalar
         {
             # variable interpolation possible - evaluate as subroutine
             # which will be used as callback
-            my $ret = make_sub_in_playground($extracted);
+            my $ret = _make_sub_in_playground($extracted);
 
             chomp $@;
             die "Eval error\n$@\n" if $@;
@@ -386,7 +386,7 @@ sub _parse_scalar
         die "Missing right curly bracket\n"
           if $extracted eq '';
 
-        my $ret = make_sub_in_playground($extracted);
+        my $ret = _make_sub_in_playground($extracted);
 
         chomp $@;
         die "Eval error\n$@\n" if $@;

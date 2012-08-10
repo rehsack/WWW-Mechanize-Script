@@ -13,10 +13,31 @@ our $VERSION = '0.001_003';
 
 use 5.014;
 
+=method check_value_names()
+
+Returns qw(text_forbid text_require).
+
+=cut
+
 sub check_value_names
 {
     return qw(text_forbid text_require);
 }
+
+=method check_response(\%check,$mech)
+
+This method checks whether any line of I<text_forbid> is found in received
+content (and accumulates I<text_forbid_code> into I<$code> when found) or
+any line of I<text_require> missing in content (and accumulates
+I<text_forbid_code> into I<$code> when missing).
+
+In case of an HTML response, the received content is rendered into plain
+text before searching for matches.
+
+Return the accumulated I<$code> and appropriate constructed message, if
+any match approval failed.
+
+=cut
 
 sub check_response
 {

@@ -13,10 +13,31 @@ our $VERSION = '0.001_003';
 
 use 5.014;
 
+=method check_value_names()
+
+Returns qw(regex_forbid regex_require).
+
+=cut
+
 sub check_value_names
 {
     return qw(regex_forbid regex_require);
 }
+
+=method check_response(\%check,$mech)
+
+This method checks whether any line of I<regex_forbid> matches against
+received content (and accumulates I<regex_forbid_code> into I<$code> when
+match) or any line of I<regex_require> doesn't match against content
+(and accumulates I<regex_forbid_code> into I<$code> unless match).
+
+In case of an HTML response, the received content is rendered into plain
+text before searching for matches.
+
+Return the accumulated I<$code> and appropriate constructed message, if
+any match approval failed.
+
+=cut
 
 sub check_response
 {

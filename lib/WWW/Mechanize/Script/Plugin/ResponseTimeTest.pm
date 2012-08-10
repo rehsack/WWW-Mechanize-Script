@@ -11,10 +11,28 @@ our $VERSION = '0.001_003';
 
 use 5.014;
 
+=method check_value_names()
+
+Returns qw(min_elapsed_time max_elapsed_time)
+
+=cut
+
 sub check_value_names
 {
     return qw(min_elapsed_time max_elapsed_time);
 }
+
+=method check_response(\%check,$mech)
+
+Proves whether I<min_elapsed_time> is greater than C<client_elapsed_time>
+(and accumulate I<min_elapsed_time_code> into I<$code> when true) or
+I<max_elapsed_time> is lower than C<client_elapsed_time> (and accumulate
+I<max_elapsed_time_code> into I<$code> when true).
+
+Return the accumulated I<$code> and appropriate constructed message, if
+any coparisation failed.
+
+=cut
 
 sub check_response
 {
@@ -23,9 +41,9 @@ sub check_response
     my $code = 0;
     my $msg;
 
-    my $min_time = $self->get_check_value( $check, "min_elapsed_time" );
-    my $max_time = $self->get_check_value( $check, "max_elapsed_time" );
-    my $total_time = $mech->client_elapsed_time();
+    my $min_time = 0 + $self->get_check_value( $check, "min_elapsed_time" );
+    my $max_time = 0 + $self->get_check_value( $check, "max_elapsed_time" );
+    my $total_time = 0 + $mech->client_elapsed_time();
 
     if ( defined($min_time) and $min_time > $total_time )
     {

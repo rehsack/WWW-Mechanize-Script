@@ -11,10 +11,28 @@ our $VERSION = '0.001_003';
 
 use 5.014;
 
+=method check_value_names()
+
+Returns qw(min_bytes max_bytes)
+
+=cut
+
 sub check_value_names
 {
     return qw(min_bytes max_bytes);
 }
+
+=method check_response(\%check,$mech)
+
+Proves whether I<min_bytes> is greater than length of received content
+(and accumulate I<min_bytes_code> into I<$code> when true) or
+I<max_bytes> is lower than length of received content (and accumulate
+I<max_bytes_code> into I<$code> when true).
+
+Return the accumulated I<$code> and appropriate constructed message, if
+any coparisation failed.
+
+=cut
 
 sub check_response
 {
@@ -23,8 +41,8 @@ sub check_response
     my $code = 0;
     my $msg;
 
-    my $min_bytes = $self->get_check_value( $check, "min_bytes" );
-    my $max_bytes = $self->get_check_value( $check, "max_bytes" );
+    my $min_bytes = 0 + $self->get_check_value( $check, "min_bytes" );
+    my $max_bytes = 0 + $self->get_check_value( $check, "max_bytes" );
     my $content_len = length $mech->response()->content();
 
     if ( defined($min_bytes) and $min_bytes > $content_len )
