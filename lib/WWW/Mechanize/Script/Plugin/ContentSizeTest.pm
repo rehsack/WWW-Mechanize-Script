@@ -7,7 +7,7 @@ use parent qw(WWW::Mechanize::Script::Plugin);
 
 # ABSTRACT: check for size of received content
 
-our $VERSION = '0.001_003';
+our $VERSION = '0.001_004';
 
 use 5.014;
 

@@ -18,7 +18,7 @@ use List::MoreUtils qw(uniq);
 use Params::Util qw(_HASH _ARRAY _STRING);
 use Pod::Usage;
 
-$VERSION = '0.001_003';
+$VERSION = '0.001_004';
 
 @EXPORT      = ();
 @EXPORT_OK   = qw(opt_required_all opt_required_one opt_exclusive load_config find_scripts);

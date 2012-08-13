@@ -7,7 +7,7 @@ use parent qw(WWW::Mechanize::Script::Plugin);
 
 # ABSTRACT: check response time of request
 
-our $VERSION = '0.001_003';
+our $VERSION = '0.001_004';
 
 use 5.014;
 

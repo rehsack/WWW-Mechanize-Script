@@ -5,7 +5,7 @@ use warnings;
 
 # ABSTRACT: plugin base class for check plugins
 
-our $VERSION = '0.001_003';
+our $VERSION = '0.001_004';
 
 use 5.014;
 

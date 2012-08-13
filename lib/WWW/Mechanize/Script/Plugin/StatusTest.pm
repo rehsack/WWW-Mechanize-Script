@@ -7,7 +7,7 @@ use parent qw(WWW::Mechanize::Script::Plugin);
 
 # ABSTRACT: prove expected HTTP status of the response
 
-our $VERSION = '0.001_003';
+our $VERSION = '0.001_004';
 
 use 5.014;
 
