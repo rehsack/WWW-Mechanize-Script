@@ -17,9 +17,9 @@ Instantiates new WWW::Mechanize::Script::Plugin. This is an abstract class.
 
 sub new
 {
-    my ( $class ) = @_;
+    my ($class) = @_;
 
-    my $self = bless( { }, $class );
+    my $self = bless( {}, $class );
 
     return $self;
 }
