@@ -28,7 +28,7 @@ use WWW::Mechanize::Timed ();
 
 =cut
 
-our $VERSION = '0.001_004';
+our $VERSION = '0.100';
 
 =method new(\%cfg)
 

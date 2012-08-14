@@ -15,7 +15,7 @@ use Params::Util qw(_ARRAY);
 use WWW::Mechanize::Script::Util qw(:ALL);
 use WWW::Mechanize::Script;
 
-our $VERSION = '0.001_004';
+our $VERSION = '0.100';
 my %opts;
 my @options = ( "file=s", "help|h", "usage|?" );
 

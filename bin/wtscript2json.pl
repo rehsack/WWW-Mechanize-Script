@@ -18,7 +18,7 @@ use Pod::Usage;
 use WWW::Mechanize::Script::Util qw(:ALL);
 use WWW::Mechanize::Script;
 
-our $VERSION = '0.001_003';
+our $VERSION = '0.100';
 my %opts = (
              "input-files"    => [],
              "output-files"   => [],
@@ -52,8 +52,10 @@ opt_required_all( \%opts, qw(input-files) );
 opt_exclusive( \%opts, qw(output-files output-pattern) );
 opt_required_one( \%opts, qw(output-files output-pattern) );
 
-_ARRAY( $opts{"input-files"} ) and $opts{"input-files"} = [ split(",", join(",", @{$opts{"input-files"}}) ) ];
-_ARRAY( $opts{"output-files"} ) and $opts{"output-files"} = [ split(",", join(",", @{$opts{"output-files"}}) ) ];
+_ARRAY( $opts{"input-files"} )
+  and $opts{"input-files"} = [ split( ",", join( ",", @{ $opts{"input-files"} } ) ) ];
+_ARRAY( $opts{"output-files"} )
+  and $opts{"output-files"} = [ split( ",", join( ",", @{ $opts{"output-files"} } ) ) ];
 
 _ARRAY( $opts{"input-files"} )
   and _ARRAY( $opts{"output-files"} )
