@@ -29,3 +29,4 @@ demo*.pkt
 MYMETA.*
 *.tar.gz
 Makefile.*
+WWW-Mechanize-Script-*
