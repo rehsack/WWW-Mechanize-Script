@@ -133,7 +133,7 @@ MSG
         $cfg{check} = \%test;
         $cfg{opts}  = $opts;
 
-        push( \@configs, \%cfg );
+        push @configs, \%cfg;
     }
 
     return \@configs;
